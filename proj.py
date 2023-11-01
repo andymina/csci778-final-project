@@ -23,3 +23,72 @@ csvs = [
     "2021 ELA.csv",
     "NYC 2021 ELA.csv"
 ]
+
+
+
+"""CPI Cleaning
+
+    Raw Data Desc
+    ---------------
+    Year: the year (2006-2021)
+    Jan-Dec: a column for the CPI for each month
+    Annual: annual CPI
+    HALF1: CPI for months 1-6
+    HALF2: CPI for months 7-12
+    
+    Clean Data Desc
+    ---------------
+    Indexed by Year (2006-2020)
+    Annual: annual CPI
+"""
+cpi = pd.read_csv(prefix + csvs[0])
+cpi = cpi.set_index("Year", drop = True)
+# drop 21 since budget goes to 20
+cpi = cpi.drop(labels = 2021)
+# keep only Annual
+cpi = cpi["Annual"].to_frame()
+
+
+"""Budget Cleaning
+
+    Raw Data Desc
+    ---------------
+    State and Federal Categorical Aid: the category where the budget is allocated
+    source_of_categorical_aid: "State" or "Federal"
+    FY XXXX: Fiscal Year where XXXX represents one of 1980-2020
+    
+    Clean Data Desc
+    ---------------
+    Indexed by Year (2006-2020)
+    State: state allocated education budget
+    Federal: federal allocated education budget
+"""
+budget = pd.read_csv(prefix + csvs[1])
+# only get education
+budget = budget[budget["State and Federal Categorical Aid"] == "Education"]
+
+# transpose and set header
+budget = budget.transpose()
+budget = budget.rename(columns=budget.iloc[1])
+
+# drop category rows
+budget = budget.drop(labels=["State and Federal Categorical Aid", "source_of_categorical_aid"])
+
+# rename FY index
+keys = ";".join(budget.index.tolist())
+vals = re.findall(r"\d{4}", keys)
+keys = keys.split(";")
+budget = budget.rename(index=dict(zip(keys,vals)))
+
+# reverse order
+budget = budget.iloc[::-1] # reverse order
+# prettify index
+budget.index.name = "Year"
+budget.index = budget.index.astype(int)
+
+# subset from 2006 onwards
+budget = budget.loc[2006:]
+# remove commas in 2006-2018
+budget.loc[2006:2018] = budget.loc[2006:2018].apply(
+    lambda series: series.str.replace(",", "").astype(int)
+)

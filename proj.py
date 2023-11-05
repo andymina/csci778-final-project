@@ -92,3 +92,22 @@ budget = budget.loc[2006:]
 budget.loc[2006:2018] = budget.loc[2006:2018].apply(
     lambda series: series.str.replace(",", "").astype(int)
 )
+
+"""Budget Feature Engineering
+
+    New Columns
+    ---------------
+    Combined: State + Federal Budget
+    Inflation: combined budget adjusted for inflation to 2020 using CPI
+    Scaled 1e9: inflation scaled to the billions
+"""
+# combined budget
+budget["Combined"] = budget["State"] + budget["Federal"]
+budget = budget.drop(columns=["State", "Federal"])
+# adjust for inflation
+budget["Inflation"] =[
+    budget["Combined"].loc[year]*cpi["Annual"].loc[2020]/cpi["Annual"].loc[year]
+    for year in budget.index
+]
+# scale to the billions
+budget["Scaled 1e9"] = np.round(budget["Inflation"] / 1e9, 2)

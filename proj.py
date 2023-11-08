@@ -111,3 +111,46 @@ budget["Inflation"] =[
 ]
 # scale to the billions
 budget["Scaled 1e9"] = np.round(budget["Inflation"] / 1e9, 2)
+
+
+"""ELA Helper Functions
+"""
+def fill_school_name(df):
+    """bfills the first valid school name in a df for every school.
+    """
+    res = []
+    for dbn in df["DBN"].unique():
+        sub = df[df["DBN"] == dbn]
+        temp = sub[(sub["Demographic"] == "All Students") & (sub["Grade"] == "All Grades")]
+        idx = temp["School Name"].first_valid_index()
+        if idx is not None:
+            name = temp["School Name"].loc[idx]
+            sub["School Name"] = sub["School Name"].fillna(name)
+        
+        res.append(sub)
+    return pd.concat(res)
+
+def flatten_scores(df):
+    """Flattens the score cols between 2006-2012 and 2013-2018
+    """
+    drops = []
+    
+    for i in range(1, 5):
+        df[f"Level {i} #"] = df[f"Level {i} #"].fillna(df[f"Num Level {i}"])
+        df = df[ ~df[f"Level {i} #"].str.contains("s")]
+        drops.append(f"Num Level {i}")
+        
+        df[f"Level {i} %"] = df[f"Level {i} %"].fillna(df[f"Pct Level {i}"])
+        df = df[ ~df[f"Level {i} %"].str.contains("s")]
+        drops.append(f"Pct Level {i}")
+
+        
+    df["Level 3+4 #"] = df["Level 3+4 #"].fillna(df["Num Level 3 and 4"])
+    df = df[ ~df["Level 3+4 #"].str.contains("s") ] 
+    drops.append("Num Level 3 and 4")
+    
+    df["Level 3+4 %"] = df["Level 3+4 %"].fillna(df["Pct Level 3 and 4"])
+    df = df[ ~df["Level 3+4 %"].str.contains("s") ] 
+    drops.append("Pct Level 3 and 4")
+
+    return df.drop(columns = drops)

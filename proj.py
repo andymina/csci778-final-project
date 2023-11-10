@@ -723,8 +723,6 @@ def createPctAni(
     return fig, ani
 
 def compute_r_line(xes, yes):
-    """Taken from the homework
-    """
     sd_x = np.std(xes)
     sd_y = np.std(yes)
     r = np.corrcoef(xes, yes)[0][1]

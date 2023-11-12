@@ -154,3 +154,29 @@ def flatten_scores(df):
     drops.append("Pct Level 3 and 4")
 
     return df.drop(columns = drops)
+
+def flatten_demographics(df, common):
+    """Flattens the demographic vals between 2006-2012 and 2013-2018
+    """
+    df["Demographic"] = df["Demographic"].fillna(df["Category"])
+    # keep only common demos
+    df = df[df["Demographic"].isin(common)]
+    df = df[df["Demographic"] != "Not SWD"]
+    return df.drop(columns = ["Category"])
+
+def set_typing(df):
+    """sets the type of each series in the df
+    """
+    # float
+    float_cols = ["Number Tested", "Level 3+4 #", "Level 3+4 %", "Year"]
+    float_cols += [f"Level {i} #" for i in range(1, 5)]
+    float_cols += [f"Level {i} %" for i in range(1, 5)]
+
+    # str cols
+    str_cols = ["Grade", "Demographic", "School Name", "Boro"]
+
+    # type mapping
+    type_mapping = {col: "float" for col in float_cols}
+    type_mapping |= {col: "str" for col in str_cols}
+
+    return df.astype(type_mapping)

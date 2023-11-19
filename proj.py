@@ -180,3 +180,51 @@ def set_typing(df):
     type_mapping |= {col: "str" for col in str_cols}
 
     return df.astype(type_mapping)
+
+
+
+def formatName(df):
+    """Removes all punctuation from schools and makes uppercase
+    """
+    name_mapping = {n:"" for n in df["School Name"].unique()}
+    
+    for key in name_mapping.keys():
+        formatted = re.sub(r"[^\w\d /]+", "", key)
+        formatted = re.sub(r" 0", " ", formatted)
+        name_mapping[key] = formatted.upper()
+        
+    return name_mapping
+
+def createAllGrades(df):
+    """Creates an All Grades value for grades in the df
+    """
+    res = []
+
+    for school in df["School Name"].unique():
+        school_df = df[df["School Name"] == school]
+
+        idx = []
+        for demo in school_df["Demographic"].unique():
+            # get df
+            data_df = school_df[school_df["Demographic"] == demo]
+
+            # get any row
+            idx = [False] * len(data_df)
+            idx[0] = True
+            new_row = data_df.loc[idx].copy()
+
+            # fill in the new row
+            new_row["Grade"] = "All Grades"
+            new_row["Number Tested"] = data_df["Number Tested"].sum()
+
+            for i in range(1, 5):
+                new_row[f"Level {i} #"] = data_df[f"Level {i} #"].sum()
+                new_row[f"Level {i} %"] = np.round(new_row[f"Level {i} #"] / new_row["Number Tested"] * 100, 2)
+
+            new_row["Level 3+4 #"] = new_row["Level 3 #"] + new_row["Level 4 #"]
+            new_row["Level 3+4 %"] = np.round(new_row["Level 3+4 #"] / new_row["Number Tested"] * 100, 2)
+
+            # append to res
+            res.append(new_row)
+    
+    return pd.concat(res)

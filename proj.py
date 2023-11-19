@@ -181,8 +181,6 @@ def set_typing(df):
 
     return df.astype(type_mapping)
 
-
-
 def formatName(df):
     """Removes all punctuation from schools and makes uppercase
     """
@@ -228,3 +226,81 @@ def createAllGrades(df):
             res.append(new_row)
     
     return pd.concat(res)
+
+"""2006-2018 ELA Cleaning
+
+    Raw 2006-2012 Columns
+    -----------------
+    DBN: DBN of the school
+    Grade: grade tested; also includes "All Grades"
+    Year: year
+    Demographic: demographic of students tested
+    Number Tested: total # of students tested
+    Mean Scale Score: mean scale score for demographic
+    Num Level X: # of lvl X scores where X is 1-4
+    Pct Level X: % of lvl X scores where X is 1-4
+    Num Level 3 and 4: # of lvl 3-4 scores
+    Pct Level 3 and 4: % of lvl 3-4 scores
+    
+    Raw 2013-2018 Columns
+    -----------------
+    DBN: DBN of the school
+    School Name: name of the school
+    Grade: grade tested; also includes "All Grades"
+    Year: year
+    Category: demographic of students tested
+    Number Tested: total # of students tested
+    Mean Scale Score: mean scale score for demographic
+    Level X #: # of lvl X scores where X is 1-4
+    Level X %: % of lvl X scores where X is 1-4
+    Level 3+4 #: # of lvl 3-4 scores
+    Level 3+4 %: % of lvl 3-4 scores
+    
+    Clean 2006-2018 Columns
+    -----------------
+    DBN: DBN of the school
+    School Name: name of the school
+    Grade: grade tested; also includes "All Grades"
+    Year: year
+    Demographic: demographic of students tested
+    Number Tested: total # of students tested
+    Level X #: # of lvl X scores where X is 1-4
+    Level X %: % of lvl X scores where X is 1-4
+    Level 3+4 #: # of lvl 3-4 scores
+    Level 3+4 %: % of lvl 3-4 scores
+"""
+# read and merge
+ela_2006_2012 = pd.concat([ pd.read_csv(prefix + csv) for csv in csvs[2:5] ])
+ela_2013_2018 = pd.read_csv(prefix + csvs[5])
+ela_2006_2018 = pd.concat([ela_2006_2012, ela_2013_2018])
+
+# get common demographics
+common = set(ela_2006_2012["Demographic"].unique()) & set(ela_2013_2018["Category"].unique())
+# reshaping
+ela_2006_2018 = flatten_scores(ela_2006_2018)
+ela_2006_2018 = flatten_demographics(ela_2006_2018, common)
+ela_2006_2018 = fill_school_name(ela_2006_2018)
+
+# any leftover nan schools have been closed/merged
+ela_2006_2018.loc[
+    ela_2006_2018["School Name"].isnull(), "School Name"
+] = "Closed or Merged"
+
+# no need for scale scores
+ela_2006_2018 = ela_2006_2018.drop(columns = ["Mean Scale Score"]).reset_index(drop = True)
+
+"""2006-2018 ELA Feature Engineering
+
+    New Columns
+    ---------------
+    Boro: boro of the school
+"""
+# add boros
+mapping = {
+    "K": "Brooklyn",
+    "Q": "Queens",
+    "M": "Manhattan",
+    "X": "Bronx",
+    "R": "Staten Island"
+}
+ela_2006_2018["Boro"] = ela_2006_2018["DBN"].str.get(2).map(mapping)

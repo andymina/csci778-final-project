@@ -304,3 +304,78 @@ mapping = {
     "R": "Staten Island"
 }
 ela_2006_2018["Boro"] = ela_2006_2018["DBN"].str.get(2).map(mapping)
+
+
+"""2019 ELA Cleaning
+
+    Raw 2019 Columns
+    -----------------
+    SY_END_DATE: school year end date
+    NRC_DESC: school demograhpic groupings;
+        one of [
+            nan, 'NYC', 'Buffalo, Rochester, Yonkers, Syracuse',
+           'Urban-Suburban High Needs', 'Rural High Needs', 'Average Needs',
+           'Low Needs', 'Charters'
+       ]
+    NRC_CODE: nrc code
+    COUNTY_CODE: county code
+    COUNTY_DESC: name of county
+    BEDSCODE: beds code for the school
+    NAME: school name
+    ITEM_SUBJECT_AREA: subject for tests; one of ["ELA", "Math"]
+    ITEM_DESC: Grades tested for ITEM_SUBJECT_AREA
+    SUBGROUP_CODE: demographic code
+    SUBGROUP_NAME: demographic
+    TOTAL_TESTED: # of students tested
+    LX_COUNT: # of lvl X scores where X is 1-4
+    LX_PCT: % of lvl X scores where X is 1-4
+    L2-L4 PCT: % of lvl 2-4 scores
+    L3-L4 PCT: % of lvl 3-4 scores
+    MEAN_SCALE_SCORE: mean scale score
+    
+    Clean 2019 Columns
+    -----------------
+    COUNTY_DESC: name of county
+    NAME: school name
+    ITEM_DESC: Grades tested for ITEM_SUBJECT_AREA
+    SUBGROUP_NAME: demographic
+    TOTAL_TESTED: # of students tested
+    LX_COUNT: # of lvl X scores where X is 1-4
+    LX_PCT: % of lvl X scores where X is 1-4
+    L2-L4 PCT: % of lvl 2-4 scores
+    L3-L4 PCT: % of lvl 3-4 scores
+"""
+ela_2019 = pd.read_csv(prefix + csvs[6])
+# cols to drop
+drops = [
+    "NRC_CODE", "NRC_DESC", "BEDSCODE", "SUBGROUP_CODE",
+    "MEAN_SCALE_SCORE", "L2-L4_PCT", "SY_END_DATE"
+]
+
+# ELA grades only
+ela_2019 = ela_2019[ ela_2019["ITEM_SUBJECT_AREA"] == "ELA"]
+drops.append("ITEM_SUBJECT_AREA")
+# NYC counties only
+nyc_counties = ["BRONX", "KINGS", "QUEENS", "NEW YORK", "RICHMOND"]
+ela_2019 = ela_2019[ ela_2019["COUNTY_DESC"].isin(nyc_counties)]
+drops.append("COUNTY_CODE")
+
+# drop cols with county/district summary
+ela_2019 = ela_2019[ ~ela_2019["NAME"].str.contains("COUNTY")]
+ela_2019 = ela_2019[ ~ela_2019["NAME"].str.contains("GEOGRAPHIC")]
+
+# drop cols with empty score
+for i in range(1, 5):
+    ela_2019 = ela_2019[ ~ela_2019[f"L{i}_COUNT"].str.contains("-")]
+    ela_2019 = ela_2019[ ~ela_2019[f"L{i}_PCT"].str.contains("-")]
+    
+    # cast to num and convert to int while we're here
+    ela_2019[f"L{i}_COUNT"] = ela_2019[f"L{i}_COUNT"].astype(int)
+    ela_2019[f"L{i}_PCT"] = ela_2019[f"L{i}_PCT"].str[:-1].astype(int)
+
+# convert these to nums while we're here
+ela_2019["L3-L4_PCT"] = ela_2019["L3-L4_PCT"].str[:-1].astype(int)
+ela_2019["TOTAL_TESTED"] = ela_2019["TOTAL_TESTED"].astype(int)
+# drop cols
+ela_2019 = ela_2019.drop(columns=drops)
+

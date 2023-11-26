@@ -305,7 +305,6 @@ mapping = {
 }
 ela_2006_2018["Boro"] = ela_2006_2018["DBN"].str.get(2).map(mapping)
 
-
 """2019 ELA Cleaning
 
     Raw 2019 Columns
@@ -379,3 +378,71 @@ ela_2019["TOTAL_TESTED"] = ela_2019["TOTAL_TESTED"].astype(int)
 # drop cols
 ela_2019 = ela_2019.drop(columns=drops)
 
+"""2019 ELA Feature Engineering
+
+['Boro', 'School Name', 'Grade', 'Demographic', 'Number Tested',
+       'Level 1 #', 'Level 1 %', 'Level 2 #', 'Level 2 %', 'Level 3 #',
+       'Level 3 %', 'Level 4 #', 'Level 4 %', 'Level 3+4 %', 'Year',
+       'Level 3+4 #']
+    
+    2019 Columns
+    -----------------
+    Boro: boro of the school
+    School Name: name of the school
+    Grade: grade tested; also includes "All Grades"
+    Year: year
+    Demographic: demographic of students tested
+    Number Tested: total # of students tested
+    Level X #: # of lvl X scores where X is 1-4
+    Level X %: % of lvl X scores where X is 1-4
+    Level 3+4 #: # of lvl 3-4 scores
+    Level 3+4 %: % of lvl 3-4 scores
+"""
+# add boros
+mapping = {
+    "KINGS": "Brooklyn",
+    "QUEENS": "Queens",
+    "NEW YORK": "Manhattan",
+    "BRONX": "Bronx",
+    "RICHMOND": "Staten Island"
+}
+ela_2019["COUNTY_DESC"] = ela_2019["COUNTY_DESC"].map(mapping)
+
+# level rename mapping
+level_mapping = [(f"L{i}_COUNT", f"Level {i} #") for i in range(1, 5)]
+level_mapping += [(f"L{i}_PCT", f"Level {i} %") for i in range(1, 5)]
+level_mapping.append(("L3-L4_PCT", "Level 3+4 %"))
+# create col mapping
+rename_mapping = dict(level_mapping)
+rename_mapping |= {
+    "TOTAL_TESTED": "Number Tested",
+    "NAME": "School Name",
+    "ITEM_DESC": "Grade",
+    "COUNTY_DESC": "Boro",
+    "SUBGROUP_NAME": "Demographic"
+}
+# rename
+ela_2019 = ela_2019.rename(columns = rename_mapping)
+
+# add year
+ela_2019["Year"] = 2019
+
+# flatten demographics
+ela_2019.loc[ela_2019["Demographic"] == "Black or African American", "Demographic"] = "Black"
+ela_2019.loc[ela_2019["Demographic"] == "Hispanic or Latino", "Demographic"] = "Hispanic"
+ela_2019.loc[ela_2019["Demographic"] == "Asian or Pacific Islander", "Demographic"] = "Asian"
+ela_2019.loc[ela_2019["Demographic"] == "Students with Disabilities", "Demographic"] = "SWD"
+
+# flatten grade
+ela_2019["Grade"] = ela_2019["Grade"].apply(lambda x: re.findall(r"\d", x)[0])
+# all grades
+ela_2019 = pd.concat([ela_2019, createAllGrades(ela_2019)])
+
+# fill 3+4 count
+ela_2019["Level 3+4 #"] = ela_2019["Level 3 #"] + ela_2019["Level 4 #"]
+
+"""2020 ELA
+
+    There is no data for the 2020 ELAs because it was cancelled due to COVID-19.
+    All data for 2020 is interpolated when graphed.
+"""

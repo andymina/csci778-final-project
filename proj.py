@@ -446,3 +446,135 @@ ela_2019["Level 3+4 #"] = ela_2019["Level 3 #"] + ela_2019["Level 4 #"]
     There is no data for the 2020 ELAs because it was cancelled due to COVID-19.
     All data for 2020 is interpolated when graphed.
 """
+
+
+
+"""2021 ELA Cleaning
+
+    Raw 2021 ELA Columns
+    -----------------
+    SY_END_DATE: school year end date
+    BEDSCODE: beds code for the school
+    NAME: school name
+    ITEM_SUBJECT_AREA: subject for tests; one of ["ELA", "Math"]
+    ITEM_DESC: Grades tested for ITEM_SUBJECT_AREA
+    SUBGROUP_CODE: demographic code
+    SUBGROUP_NAME: demographic
+    TOTAL_ENROLLED: # of students enrolled
+    TOTAL_TESTED: # of students tested
+    TOTAL_NOT_TESTED: # of students not tested
+    LX_COUNT: # of lvl X scores where X is 1-4
+    LX_PCT: % of lvl X scores where X is 1-4
+    L3-L4 PCT: % of lvl 3-4 scores
+    MEAN_SCALE_SCORE: mean scale score
+    
+    Raw NYC 2021 ELA Columns
+    -----------------
+    SCHOOL YEAR END DATE: school year end date
+    BEDS CODE: beds code for the school
+    NAME: school name
+    SUBJECT: Grade and subject tested on
+    TOTAL ENROLLED: # of students enrolled
+    TOTAL NOT TESTED: # of students not tested
+    TOTAL TESTED: # of students tested
+    LEVEL X COUNT: # of lvl X scores where X is 1-4
+    LEVEL X PCT: % of lvl X scores where X is 1-4
+    LEVEL 3-4 PCT: % of lvl 3-4 scores
+    MEAN SCALE SCORE: mean scale score
+    
+    Clean 2021 ELA Columns
+    -----------------
+    NAME: school name
+    ITEM_DESC: Grades tested for ITEM_SUBJECT_AREA
+    SUBGROUP_NAME: demographic
+    TOTAL_TESTED: # of students tested
+    LX_COUNT: # of lvl X scores where X is 1-4
+    LX_PCT: % of lvl X scores where X is 1-4
+    L3-L4 PCT: % of lvl 3-4 scores
+"""
+ela_2021 = pd.read_csv(prefix + csvs[7])
+nyc_ela_2021 = pd.read_csv(prefix + csvs[8])
+
+# store columns to drop
+drops = [
+    "BEDSCODE", "TOTAL_ENROLLED", "TOTAL_NOT_TESTED",
+    "MEAN_SCALE_SCORE", "SY_END_DATE", "SUBGROUP_CODE"
+]
+
+# only nyc schools
+nyc_schools = set(nyc_ela_2021["NAME"].unique())
+ela_2021 = ela_2021[ela_2021["NAME"].isin(nyc_schools)]
+# ELA grades only
+ela_2021 = ela_2021[ela_2021["ITEM_SUBJECT_AREA"] == "ELA"]
+drops.append("ITEM_SUBJECT_AREA")
+# drop cols with county/district summary
+ela_2021 = ela_2021[ ~ela_2021["NAME"].str.contains("COUNTY")]
+ela_2021 = ela_2021[ ~ela_2021["NAME"].str.contains("GEOGRAPHIC")]
+
+# drop rows with empty count/pct
+for i in range(1, 5):
+    ela_2021 = ela_2021[ ~ela_2021[f"L{i}_COUNT"].str.contains("-") ]
+    ela_2021 = ela_2021[ ~ela_2021[f"L{i}_PCT"].isnull() ]
+    
+    # cast to num
+    ela_2021[f"L{i}_COUNT"] = ela_2021[f"L{i}_COUNT"].astype(int)
+    ela_2021[f"L{i}_PCT"] = ela_2021[f"L{i}_PCT"].str[:-1].astype(int)
+    
+# flatten demographic
+groups = [
+    "All Students", "Black or African American", "Asian or Pacific Islander",
+    "White", "Hispanic or Latino", "Students with Disabilities"
+]
+ela_2021 = ela_2021[ela_2021["SUBGROUP_NAME"].isin(groups)]
+
+# drop the cols
+ela_2021 = ela_2021.drop(columns = drops)
+
+
+"""2021 ELA Feature Engineering
+       
+    2021 Columns
+    -----------------
+    Boro: boro of the school
+    School Name: name of the school
+    Grade: grade tested; also includes "All Grades"
+    Year: year
+    Demographic: demographic of students tested
+    Number Tested: total # of students tested
+    Level X #: # of lvl X scores where X is 1-4
+    Level X %: % of lvl X scores where X is 1-4
+    Level 3+4 #: # of lvl 3-4 scores
+    Level 3+4 %: % of lvl 3-4 scores
+"""
+# add year
+ela_2021["Year"] = 2021
+# level rename mapping
+level_mapping = [(f"L{i}_COUNT", f"Level {i} #") for i in range(1, 5)]
+level_mapping += [(f"L{i}_PCT", f"Level {i} %") for i in range(1, 5)]
+level_mapping.append(("L3-L4_PCT", "Level 3+4 %"))
+# create col mapping
+rename_mapping = dict(level_mapping)
+rename_mapping |= {
+    "TOTAL_TESTED": "Number Tested",
+    "NAME": "School Name",
+    "ITEM_DESC": "Grade",
+    "COUNTY_DESC": "Boro",
+    "SUBGROUP_NAME": "Demographic"
+}
+# rename
+ela_2021 = ela_2021.rename(columns = rename_mapping)
+
+# flatten grade
+ela_2021["Grade"] = ela_2021["Grade"].apply(lambda x: re.findall(r"\d", x)[0])
+# flatten demographics
+ela_2021.loc[ela_2021["Demographic"] == "Black or African American", "Demographic"] = "Black"
+ela_2021.loc[ela_2021["Demographic"] == "Hispanic or Latino", "Demographic"] = "Hispanic"
+ela_2021.loc[ela_2021["Demographic"] == "Asian or Pacific Islander", "Demographic"] = "Asian"
+ela_2021.loc[ela_2021["Demographic"] == "Students with Disabilities", "Demographic"] = "SWD"
+
+# find out which schools 2019 and 2021 have in common/different
+schools_2021 = set(ela_2021["School Name"].unique())
+schools_2019 = set(ela_2019["School Name"].unique())
+common = list(schools_2021.intersection(schools_2019))
+diff = list(schools_2021.difference(schools_2019))
+

@@ -578,3 +578,59 @@ schools_2019 = set(ela_2019["School Name"].unique())
 common = list(schools_2021.intersection(schools_2019))
 diff = list(schools_2021.difference(schools_2019))
 
+# retrieve boros from Google Maps
+url = "https://maps.googleapis.com/maps/api/place/textsearch/json?"
+payload = {}
+headers = {}
+boros = []
+
+for name in diff:
+    query = urlencode({"query": name, "key": "AIzaSyCwF1cFyjLd6Txrczy_H2jZQj6NUWd4OZ0"})
+    response = requests.request(
+        "GET", url+query, headers = headers, data = payload
+    )
+    res = json.loads(response.text)["results"]
+    
+    if len(res) > 0:
+        res = res[0]
+        county = re.findall(r", [\w ]+,", res["formatted_address"])[0][2:-1].upper()
+        boros.append(county)
+    else:
+        boros.append(None)
+
+        # set JHS 291 ROLAND HAYES manually
+boros[boros.index(None)] = "BROOKLYN"
+# add boros of missing schools to dataframe
+for i in range(len(diff)):
+    ela_2021.loc[ela_2021["School Name"] == diff[i], "Boro"] = boros[i]
+    
+# add boros of common schools
+for school in common:
+    boro = ela_2019[ela_2019["School Name"] == school]["Boro"].unique()[0]
+    ela_2021.loc[ela_2021["School Name"] == school, "Boro"] = boro
+    
+# create boro rename mapping
+rename_mapping = {
+    "QUEENS": "Queens",
+    "NEW YORK": "Manhattan",
+    "BRONX": "Bronx",
+    "BROOKLYN": "Brooklyn",
+    "STATEN ISLAND": "Staten Island"
+}
+
+# grab boros in df
+boros_in_df = set(ela_2021["Boro"].unique())
+boros_in_df.difference_update(rename_mapping.keys())
+boros_in_df.difference_update([s.title() for s in rename_mapping.keys()])
+boros_in_df.remove("Manhattan")
+# set the renaming boros to queens by hand
+rename_mapping |= {b:"Queens" for b in boros_in_df}
+# rename
+ela_2021["Boro"] = ela_2021["Boro"].replace(to_replace = rename_mapping)
+
+# all grades
+ela_2021 = pd.concat([ela_2021, createAllGrades(ela_2021)])
+
+# add prof # and %
+ela_2021["Level 3+4 #"] = ela_2021["Level 3 #"] + ela_2021["Level 4 #"]
+ela_2021["Level 3+4 %"] = ela_2021["Level 3+4 %"].str[:-1]

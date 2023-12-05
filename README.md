@@ -14,4 +14,5 @@
 --> create single csv of clean data  
 4. get frontend / chart working  
 --> ~~create website ~~ --> luiscollado.com/csci778-final-project
+--> `chart.js` library
 --> get js to read csv

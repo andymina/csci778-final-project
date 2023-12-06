@@ -634,3 +634,90 @@ ela_2021 = pd.concat([ela_2021, createAllGrades(ela_2021)])
 # add prof # and %
 ela_2021["Level 3+4 #"] = ela_2021["Level 3 #"] + ela_2021["Level 4 #"]
 ela_2021["Level 3+4 %"] = ela_2021["Level 3+4 %"].str[:-1]
+
+
+
+"""Merge 2006-2021
+"""
+ela = pd.concat([ela_2006_2018, ela_2019, ela_2021]).reset_index(drop = True)
+# set typing
+ela = set_typing(ela)
+# format everyone's name
+ela["School Name"] = ela["School Name"].replace(to_replace=formatName(ela))
+# fix typo by hand
+typo = "JOHN W LAVELLE PREPARATORY CHARTER SCHOO"
+ela.loc[ela["School Name"] == typo, "School Name"] = typo + "L"
+
+# redo %
+for i in range(1, 5):
+    ela[f"Level {i} %"] = np.round(ela[f"Level {i} #"] / ela["Number Tested"] * 100, 2)
+ela["Level 3+4 %"] = np.round(ela["Level 3+4 #"] / ela["Number Tested"] * 100, 2)
+
+# fill DBN with empty
+ela["DBN"] = ela["DBN"].fillna("00N000")
+
+
+
+"""Analysis Helper Code
+"""
+def createProfPcts(df, cols):
+    """Returns a df containing the proficiency %s by year grouped by `cols`.
+    """
+    g = df.groupby(cols, as_index = True)
+    pct = g["Level 3+4 #"].sum() / g["Number Tested"].sum() * 100
+    if len(cols) > 1:
+        pct = pct.unstack().transpose()
+        pct.columns.name = None
+        
+    pct = pct.fillna(0)
+    
+    return pct
+
+def createPctAni(
+    data, lines,
+    title="", xlabel="", ylabel="",
+    start_year=2006, end_year=2021
+):
+    """Returns a matplotlib.figure and matplotlib.axis containing a line graph of the given data.
+    """
+    # update animation frame
+    def update(frame, ax, lines, data):
+        for line in lines:
+            year = frame + start_year
+            if year != 2020:
+                xdata, ydata = line.get_data() # get x, y
+                if year == 2006:
+                    xdata = []
+                    ydata = []
+                xdata.append(year) # update x 
+                ydata.append(data[line.get_label()].loc[year]) # update y
+                line.set_data(xdata, ydata) # set data
+
+    # create the plot
+    fig, ax = plt.subplots()
+    ax.grid()
+    # set title
+    ax.set_title(title)
+    # set x axis
+    ax.set_xlim(start_year, end_year)
+    ax.set_xlabel(xlabel)
+    # set y axis
+    ax.set_ylim(0, 100)
+    ax.set_ylabel(ylabel)
+
+    # render the lines
+    for line in lines:
+        ax.add_line(line)
+    
+    # set up legend
+    ax.legend(handles = lines, fontsize = "x-small")
+    total_frames = end_year - start_year + 1
+
+    # create animation
+    ani = FuncAnimation(
+        fig, update, frames = total_frames, interval = 1000,
+        fargs = (ax, lines, data),
+        repeat = True
+    )
+    
+    return fig, ani

@@ -721,3 +721,73 @@ def createPctAni(
     )
     
     return fig, ani
+
+def compute_r_line(xes, yes):
+    """Taken from the homework
+    """
+    sd_x = np.std(xes)
+    sd_y = np.std(yes)
+    r = np.corrcoef(xes, yes)[0][1]
+    m = r * sd_y / sd_x
+    b = yes[0] - m * xes[0]
+    return r, m, b
+
+def createBudgetPlot(xdata, ydata, label, color):
+    """Creates a lmplot of the given data
+    """
+    fig, ax = plt.subplots()
+    
+    # get data
+    corr, m, b = compute_r_line(xdata, ydata)
+    corr = np.round(corr, 2)
+    m = np.round(m, 2)
+    b = np.round(b, 2)
+
+    # plot data
+    ax.scatter(xdata, ydata, color = color)
+    
+    xes = np.arange(10, 14.5, .5)
+    yes = [m*x + b for x in xes]
+    r_line = Line2D(xes, yes, label = f"y = {m}x + {b}\n corr = {corr}")
+    # plot r line
+    ax.add_line(r_line)#(xes, yes, label = f"y = {m}x + {b}\n corr = {corr}")
+
+    ax.set(
+        xticks = xes,
+        xlabel = "Budget ($ in billions)",
+        ylim = [0, 100],
+        ylabel = "Percent of Proficient Students (%)",
+        title = f"NY Education Budget vs. ELA Proficiency under {label}"
+    )
+    ax.xaxis.set_major_formatter("{x:1.2f}")
+    ax.grid()
+    ax.legend()
+    
+    return fig, ax
+
+def createNYCProf(start_year=2006, end_year=2021):
+    """Creates a df of NYC's overall proficiency
+    """
+    years = []
+    pcts = []
+    for year in range(start_year, end_year + 1):
+        if year != 2020:            
+            df = gen_ela[
+                (gen_ela["Level 3+4 %"] >= 65) &
+                (gen_ela["Year"] == year)
+            ]
+
+            res = len(df) / len(gen_ela[gen_ela["Year"] == year]) * 100
+            pcts.append(np.round(res, 2))
+            years.append(year)
+    
+    return pd.DataFrame(pcts, index=years, columns=["Proficient School %"])
+
+# lines to represent each boro for graphing
+boro_lines = [
+    Line2D([], [], color = "darkorange", label = "Brooklyn"),
+    Line2D([], [], color = "purple", label = "Queens"),
+    Line2D([], [], color = "green", label = "Bronx"),
+    Line2D([], [], color = "red", label = "Staten Island"),
+    Line2D([], [], color = "blue", label = "Manhattan")
+]

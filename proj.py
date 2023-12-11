@@ -791,3 +791,17 @@ boro_lines = [
     Line2D([], [], color = "red", label = "Staten Island"),
     Line2D([], [], color = "blue", label = "Manhattan")
 ]
+
+"""Graphs
+"""
+# General ELA Proficiency
+gen_ela = ela[
+    (ela["Grade"] == "All Grades") &
+    (ela["Demographic"] == "All Students")
+]
+gen_ela_pcts = createProfPcts(gen_ela, ["Boro", "Year"])
+gen_fig, gen_ani = createPctAni(
+    gen_ela_pcts, [dc(x) for x in boro_lines], title="Overall ELA Proficiency",
+    xlabel="Year", ylabel="Percent of Proficient Students (%)"
+)
+gen_ani.save("assets/Overall-Proficiency.gif")

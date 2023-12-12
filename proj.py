@@ -805,3 +805,42 @@ gen_fig, gen_ani = createPctAni(
     xlabel="Year", ylabel="Percent of Proficient Students (%)"
 )
 gen_ani.save("assets/Overall-Proficiency.gif")
+
+# Children of Color ELA proficiency
+coc_ela = ela[
+    (ela["Grade"] == "All Grades") &
+    (ela["Demographic"] != "White")
+]
+coc_ela_pcts = createProfPcts(coc_ela, ["Boro", "Year"])
+coc_fig, coc_ani = createPctAni(
+    coc_ela_pcts, [dc(x) for x in boro_lines], title="Children of Color ELA Proficiency",
+    xlabel="Year", ylabel="Percent of Proficient Students (%)"
+)
+coc_ani.save("assets/Children-Proficiency.gif")
+
+# SWD proficiency
+swd_ela = ela[
+    (ela["Grade"] == "All Grades") &
+    (ela["Demographic"] == "SWD")
+]
+swd_ela_pcts = createProfPcts(swd_ela, ["Boro", "Year"])
+swd_fig, swd_ani = createPctAni(
+    swd_ela_pcts, [dc(x) for x in boro_lines], title="SWD ELA Proficiency",
+    xlabel="Year", ylabel="Percent of Proficient Students (%)"
+)
+swd_ani.save("assets/SWD-Proficiency.gif")
+
+# create y data
+year_pcts = createProfPcts(gen_ela, ["Year"])
+
+# nclb budget
+nclb_x = budget["Scaled 1e9"].loc[2006: 2014].tolist()
+nclb_y = year_pcts.loc[2006:2014].tolist()
+nclb_fig, nclb_ax = createBudgetPlot(nclb_x, nclb_y, "NCLB", "red")
+nclb_fig.savefig("assets/NCLB-Budget.png")
+
+# essa vs budget
+essa_x = budget["Scaled 1e9"].loc[2015:2019].tolist()
+essa_y = year_pcts.loc[2015:2019].tolist()
+essa_fig, essa_ax = createBudgetPlot(essa_x, essa_y, "ESSA", "green")
+essa_fig.savefig("assets/ESSA-Budget.png")

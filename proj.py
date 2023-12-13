@@ -844,3 +844,60 @@ essa_x = budget["Scaled 1e9"].loc[2015:2019].tolist()
 essa_y = year_pcts.loc[2015:2019].tolist()
 essa_fig, essa_ax = createBudgetPlot(essa_x, essa_y, "ESSA", "green")
 essa_fig.savefig("assets/ESSA-Budget.png")
+
+
+# NYC Overall Proficiency
+nyc_prof = createNYCProf(2006, 2021)
+nyc_fig, nyc_ani = createPctAni(
+    nyc_prof, [Line2D([], [], color="red", label="Proficient School %")],
+    title="NYC Schools with a Proficiency Rate over 65%",
+    xlabel="Year", ylabel="Percent of Proficient Schools (%)"
+)
+nyc_ani.save("assets/NYC-Proficiency.gif")
+
+# Common Core
+years = [y for y in range(2013, 2019)]
+grade_3 = ela[
+    (ela["Demographic"] == "All Students") &
+    (ela["Grade"] == "3")
+]
+grade_4 = ela[
+    (ela["Demographic"] == "All Students") &
+    (ela["Grade"] == "4")
+]
+grade_5 = ela[
+    (ela["Demographic"] == "All Students") &
+    (ela["Grade"] == "5")
+]
+
+# # of schools with no proficients 3rd grades from 2013-2017
+grade3_bars = [len(grade_3[
+    (grade_3["Year"] == year) &
+    (grade_3["Level 3+4 #"] == 0)
+]) for year in years]
+# # of schools with no proficients 3rd grades from 2013-2017
+grade4_bars = [len(grade_4[
+    (grade_4["Year"] == year) &
+    (grade_4["Level 3+4 #"] == 0)
+]) for year in years]
+# # of schools with no proficients 3rd grades from 2013-2017
+grade5_bars = [len(grade_5[
+    (grade_5["Year"] == year) &
+    (grade_5["Level 3+4 #"] == 0)
+]) for year in years]
+
+# graph
+width = 0.25
+cc_bar_fig, cc_bar_ax = plt.subplots()
+cc_bar_ax.bar([y - width for y in years], grade3_bars, width, label="Grade 3")
+cc_bar_ax.bar([y for y in years], grade4_bars, width, label="Grade 4")
+cc_bar_ax.bar([y + width for y in years], grade5_bars, width, label="Grade 5")
+
+cc_bar_ax.legend()
+cc_bar_ax.set(
+    title="# of Schools with No Proficient Students in Grade",
+    xlabel="Year",
+    ylabel="# of Schools",
+    ylim=[0, 10]
+)
+cc_bar_fig.savefig("assets/Common-Core-Bar.png")

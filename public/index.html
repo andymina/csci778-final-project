@@ -2,26 +2,711 @@
 <html>
   <head>
     <title>CSCI 778 Final Project</title>
-    <link rel="stylesheet" href="style.css">
+    <style>
+* {
+  font-family: sans-serif;
+  tab-size: 2;
+}
+
+details > pre{
+  font-family: monospace;
+  font-size: 0.7em;
+  padding: 1em;
+  border-radius: 6px;
+  overflow-x: scroll;
+  tab-size: 2;
+}
+
+ul{
+  padding-left: 1em;
+}
+
+h3{
+  display: inline-block;
+  margin: 0px;
+}
+
+summary{
+  cursor: pointer;
+  transition: all ease 0.5s;
+  padding-left: 1em;
+  margin: 0em -1em 0em -1em;
+  border-radius: 8px 8px 0px 0px;
+}
+
+
+details{
+  border-radius: 8px;
+  transition: all ease 0.2s;
+  margin: 0.5em 0em 0em 0em;
+  padding: 1em;
+  border-radius: 6px;
+  line-height: 1.3;
+  border: 2px dotted #ffe291;
+}
+
+details:hover{
+    box-shadow: 3px 3px 0px #ffe291;
+    transform: translate(-2px, -2px);
+  }
+
+details[open]{
+  border: 2px solid #ffe291;
+  transform: translate(-2px, -2px);    
+  box-shadow: 3px 3px 0px #ffe291;
+
+}
+
+details[open]:hover{
+}
+
+#container{
+  max-width: 800px;
+  display: block;
+  margin: auto;
+  text-align: left;
+  padding: 1em;
+  margin-bottom: 500px;
+}
+
+html{
+  margin: 0px;
+  padding: 0px;
+  border: 0px;
+}
+
+
+h2{
+  border-bottom: 2px solid black;
+  padding-bottom: 0.1em;
+}
+
+h1{
+  border-bottom: 4px solid black;
+  padding-bottom: 0.1em;
+}
+
+body{
+  font-size: 14pt;
+  text-align: center;
+  margin: 0px;
+}
+
+p{
+  line-height: 1.3;
+}
+
+canvas{
+  width: 100%;
+  height: 0px;
+  max-height: 500px;
+}
+
+.flex-parent{
+  display: flex;  
+  flex-wrap: wrap; 
+  gap: 1em;
+}
+
+.flexer{
+  font-size: 14px;
+  display: flex;
+  flex: 1 1 auto;
+}
+
+.flexer > details > img {
+  max-width: 100%;
+}
+
+.dataset{
+  width: 25em;
+}
+
+.flexer > details > summary{
+  font-size: 14pt;
+}
+
+.flexer > details {
+  width: 100%;
+  padding: 1em;
+}
+
+    </style>
   </head>
   <body>
+    <div id="container">
     <div id="description" class="bodychild" style="padding-top: 0px;">
       <h1 style="margin-bottom: 0.25em;">
       CSCI 778 Final Project
-    </h1>
-    <h4 style="margin-top: 0.25em;">
-      Andy Mina and Luis Collado
-    </h4>
-    </div>
-    <div class="bodychild" id="chart-container">
-      <canvas id="chart"></canvas>
-    </div>
+      </h1>
+      <h4 style="margin-top: 0.25em;">
+       Andy Mina and Luis Collado
+      </h4>
+    </div> <!-- end description div -->
+<p>We wanted to analyze the impact that Pres. Bush&#39;s No Child Left Behind (NCLB) and Pres. Obama&#39;s Every Student Succeeds Act (ESSA) had on NYC ELA exam performance. NCLB and ESSA treated schools wildly differently and each had a unique belief about how the budget should be allocated resulting in major performance differences. Zooming into NYC from the nationwide view, I hypothesized that overall NYC ELA proficiency would be better under ESSA given the historical background of both policies.</p>
+<p>I used data science to show the overall trend of ELA scores across the 5 boroughs as well as notable anomalies through visualizations. I&#39;ve also created a Linear Regession of the city&#39;s general performance with the allocated budget for that year in an attempt to predict the future trend of ELA scores.</p>
+<p>NYC is the nation&#39;s largest public school system so understanding how federal policy impacts the ELA scores of NYC can provide insight to how federal policy will influence ELA scores on a large scale. It&#39;s also important to learn the mistakes of past federal policies so we can better invest into the growing future of NYC&#39;s public education.</p>
+
+<h2>Ethics</h2>
+
+<details>
+  <summary><h3>Ethical Problems</h3></summary>
+  <details>
+    <summary>    
+      <b>An Informed Populace</b>
+    </summary>
+    <p>
+      Often, legislation has to be marketed to the public in order to be passed. There are always votes to be won and bartered for in Congress, and these back-and-forths happen through promises and public opinion campaigns. If there is a narrative attached to a legislation, it must appeal to the emotions and senses of rationality of the people whose representatives will vote for it. 
+    </p>
+    <p>
+      In the case of No Child Left Behind, the narrative was that schools would no longer be &quot;rewarded&quot; for poor performance. Public Education had purportedly reached its apparently dire situation due to a twisted system of values in the education system. With the right laws in place, education districts and teachers would be <i>incentivized</i> to produce higher academic achievers due to their fear of a deterrent, in this case a lack of funding and threat of closure.
+    </p>
+    <p>
+      By displaying education data visually and clearly, the task of arguing with sensationalized and/or emotionally charged public policies becomes significantly less psychological. Single dimensions of the short-term and long term effects that public policies have on educator behavior and student academic performance can be seen in the graphs we've created using 
+      <span style="font-family: monospace;">numpy</span>,
+      <span style="font-family: monospace;">pandas</span>,  
+      <span style="font-family: monospace;">matplotlib</span>, and 
+      <span style="font-family: monospace;">chart.js</span>.
+    </p>
+  </details>
+    <details>
+      <summary>
+      <b>Cold, Hard, Data</b>
+      </summary>
+      <p>...or is it? While standardized tests are often treated as an objective window into the academic performance of students, well-known accounts of teachers changing their curriculums completely to match the content of student assessment clouds the usefulness of the data collected on student achievement. In making standardized testing disproportionately important to students and/or educators, we can end up changing the meaning of a standardized test score.</p>
+    </details>
+    <details>
+      <summary>
+        <b>Public Data!</b>
+      </summary>
+      <p>While the datasets that we used for this project are public, the knowledge required to process the data and present it in the ways that we did is nowhere near as public. It would be a completely reasonable thing for the government to do to provide "Data Explorer" frontends for the data that they provide an API to. While anyone can download the data, that doesn't in itself make the data accessible to everyone.
+    </details>
+
+</details>
+
+
+<details>
+  <summary><h3>History</h3></summary>
+
+  <details>
+       <summary>
+          <h3 id="no-child-left-behind">No Child Left Behind (2001 - 2015)</h3>
+       </summary>
+        <p><em>No Child Left Behind</em> (NCLB) was enacted in 2001 by President George W. Bush in an attempt to improve public education. When NCLB was unveiled, it set a goal for all students to achieve 100% proficiency in reading and math by 2014. To meet this goal NCLB held schools accountable through the tests scores its students earned on standardized exams, one of which was the ELA.</p>
+<p>By NCLB policy, schools that failed to make sufficient yearly progress towards the proficiency goal of 2014 were deemed &quot;failing.&quot; Failing schools would receive less funding and inversely, schools that were meeting/exceeding expectations would get more funding. This left schools in a constant catch-22 to provide academic resources for struggling students. If a school failed to meet the benchmark, it could face closure.</p>
+<p>As it became abundantly clear that high ELA scores was all that mattered, public trust in the education system became to disappear. Schools would inflate their scores to avoid closures and cut their curriculums to only focus on test material. In order to regain public trust and remedy a failing public education system, the federal government designed the <em>Common Core State Standards</em> (CCSS) in 2009 so schools could effectively prepare students for standardized exams. While CCSS were not officially mandated, NCLB did make it clear that schools that didn&#39;t adopt CCSS would receive less funding. NYC administered its first CCSS ELA in 2013.</p>
+
+</details>
+     <details>
+       <summary>
+         <h3 id="every-student-succeeds-act">Every Student Succeeds Act (2015 - present)</h3>
+       </summary>
+        <p><em>Every Student Succeeds Act</em> (ESSA) was enacted in 2015 by President Barack Obama in an attempt to remedy a struggling public education system. ESSA removed the 2014 proficiency goal (set by NCLB) and allowed schools to set long-term or short-term goals for themselves which alleviated some of the pressure they were under.</p>
+<p>ESSA also removed the funding catch-22 that NCLB has imposed. Aside from resolving the negative feedback loop, ESSA redefined a school&#39;s achievement status to be holistic than just standardized test results. With federal approval, states could design their own achievement standards and their own standardized exams.</p>
+<p>Pres. Obama&#39;s ESSA set a precedent for further education reform by prohibiting the government from imposing any new curriculums upon the states. CCSS still existed at the time, but states were no longer coerced into adopting them.</p>
+</details>
+
+</details>
+
+ 
+
+
+
+
+<h2>Programming</h2>
+<details>
+  <summary><h3>Datasets</h3></summary>
+  <p>The data sets used in this project are linked below along with their descriptions and purposes. <i>Note: There is no data for 2020 ELA Scores as they were cancelled due to COVID-19.</i></p>
+
+  <div class="flex-parent">
+
+
+    <div class="flexer dataset">
+      <details>
+        <summary>
+      <a href="https://data.cityofnewyork.us/Education/2006-2012-English-Language-Arts-ELA-Test-Results-S/wrhz-w8mn">2006-2012 ELA Scores - All Students</a></summary>
+      <ul>
+<li><ul>
+<li><strong>Description</strong>: ELA scores for NYC public schools (listed as DBN) from 2006-2012.</li>
+<li><strong>Columns</strong>:<ul>
+<li><code>DBN</code>: DBN of the school</li>
+<li><code>Grade</code>: grade tested; also includes &quot;All Grades&quot;</li>
+<li><code>Year</code>: year</li>
+<li><code>Demographic</code>: demographic of students tested</li>
+<li><code>Number Tested</code>: total # of students tested</li>
+<li><code>Mean Scale Score</code>: mean scale score for demographic</li>
+<li><code>Num Level X</code>: # of lvl X scores where X is 1-4</li>
+<li><code>Pct Level X</code>: % of lvl X scores where X is 1-4</li>
+<li><code>Num Level 3 and 4</code>: # of lvl 3-4 scores</li>
+<li><code>Pct Level 3 and 4</code>: % of lvl 3-4 scores</li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+</details>
+</div>
+
+    <div class="flexer dataset">
+<details>
+  <summary>
+      <a href="https://data.cityofnewyork.us/Education/2006-2012-English-Language-Arts-ELA-Test-Results-S/tn5h-i3e8">2006-2012 ELA Scores - Ethnicity</a></summary>
+
+      <ul>
+<li><ul>
+<li><strong>Description</strong>: ELA scores for NYC public schools (listed as DBN) from 2006-2012 grouped by <code>Ethnicity</code> where ethnicity is one of <code>[&#39;Asian&#39;, &#39;Black&#39;, &#39;Hispanic&#39;, &#39;White&#39;]</code>.</li>
+<li><strong>Columns</strong>:<ul>
+<li><code>DBN</code>: DBN of the school</li>
+<li><code>Grade</code>: grade tested; also includes &quot;All Grades&quot;</li>
+<li><code>Year</code>: year</li>
+<li><code>Demographic</code>: demographic of students tested</li>
+<li><code>Number Tested</code>: total # of students tested</li>
+<li><code>Mean Scale Score</code>: mean scale score for demographic</li>
+<li><code>Num Level X</code>: # of lvl X scores where X is 1-4</li>
+<li><code>Pct Level X</code>: % of lvl X scores where X is 1-4</li>
+<li><code>Num Level 3 and 4</code>: # of lvl 3-4 scores</li>
+<li><code>Pct Level 3 and 4</code>: % of lvl 3-4 scores</li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+</details>
+
+</div>
+    <div class="flexer dataset">
+<details><summary>
+      <a href="https://data.cityofnewyork.us/Education/2006-2012-English-Language-Arts-ELA-Test-Results-S/phth-xf25">2006-2012 ELA Scores - SWD</a></summary>
+<ul>
+<li>
+      <ul>
+<li><strong>Description</strong>: ELA scores for NYC public schools (listed as DBN) from 2006-2012 grouped by <code>SWD</code> status. SWD is one of <code>[&#39;SWD&#39;, &#39;Not SWD&#39;]</code>. &quot;Not SWD&quot; was disregarded through PCA as it is just the complement of &quot;SWD.&quot;</li>
+<li><strong>Columns</strong>:<ul>
+<li><code>DBN</code>: DBN of the school</li>
+<li><code>Grade</code>: grade tested; also includes &quot;All Grades&quot;</li>
+<li><code>Year</code>: year</li>
+<li><code>Demographic</code>: demographic of students tested</li>
+<li><code>Number Tested</code>: total # of students tested</li>
+<li><code>Mean Scale Score</code>: mean scale score for demographic</li>
+<li><code>Num Level X</code>: # of lvl X scores where X is 1-4</li>
+<li><code>Pct Level X</code>: % of lvl X scores where X is 1-4</li>
+<li><code>Num Level 3 and 4</code>: # of lvl 3-4 scores</li>
+<li><code>Pct Level 3 and 4</code>: % of lvl 3-4 scores</li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+</details>
+</div>
+    <div class="flexer dataset">
+
+      <details><summary>
+  <a href="https://data.cityofnewyork.us/Education/2013-2018-School-ELA-REsults/qkpp-pbi8">2013-2018 ELA Scores</a></summary>
+  <ul>
+<li><ul>
+<li><strong>Description</strong>: ELA scores for NYC public schools (listed as DBN and school name) from 2013-2018. Also includes &quot;All Grades&quot; which represents the cumulative data of all grades tested at the school in that year grouped by <code>Category</code>. Category is one of <code>[&#39;All Students&#39;, &#39;SWD&#39;, &#39;Not SWD&#39;, &#39;White&#39;, &#39;Asian&#39;, &#39;Black&#39;, &#39;Hispanic&#39;, &#39;Female&#39;, &#39;Male&#39;, &#39;Not Econ Disadv&#39;, &#39;Econ Disadv&#39;, &#39;Ever ELL&#39;, &#39;Never ELL&#39;, &#39;Current ELL&#39;]</code>.</li>
+<li><strong>Columns</strong>:<ul>
+<li><code>DBN</code>: DBN of the school</li>
+<li><code>School Name</code>: name of the school</li>
+<li><code>Grade</code>: grade tested; also includes &quot;All Grades&quot;</li>
+<li><code>Year</code>: year</li>
+<li><code>Category</code>: demographic of students tested</li>
+<li><code>Number Tested</code>: total # of students tested</li>
+<li><code>Mean Scale Score</code>: mean scale score for demographic</li>
+<li><code>Level X #</code>: # of lvl X scores where X is 1-4</li>
+<li><code>Level X %</code>: % of lvl X scores where X is 1-4</li>
+<li><code>Level 3+4 #</code>: # of lvl 3-4 scores</li>
+<li><code>Level 3+4 %</code>: % of lvl 3-4 scores</li>
+</ul>
+</li>
+</ul>
+</li>
+</ul></details>
+</div>
+    <div class="flexer dataset">
+      <details><summary>
+      <a href="https://data.nysed.gov/downloads.php">2019 ELA Scores</a></summary>
+
+      <ul>
+<li><ul>
+<li><strong>Description</strong>: ELA and Math scores for all NY schools (listed by school name) in 2019. Doesn&#39;t include &quot;All Grades&quot; category like previous years.</li>
+<li><strong>Columns</strong>:<ul>
+<li><code>SY_END_DATE</code>: school year end date</li>
+<li><code>NRC_DESC</code>: school demograhpic groupings; one of<pre><code>  [
+      nan, <span class="hljs-symbol">'NYC</span>', <span class="hljs-symbol">'Buffalo</span>, Rochester, Yonkers, Syracuse',
+      <span class="hljs-symbol">'Urban-Suburban</span> High Needs', <span class="hljs-symbol">'Rural</span> High Needs', <span class="hljs-symbol">'Average</span> Needs',
+      <span class="hljs-symbol">'Low</span> Needs', <span class="hljs-symbol">'Charters</span>'
+  ]
+</code></pre></li>
+<li><code>NRC_CODE</code>: nrc code</li>
+<li><code>COUNTY_CODE</code>: county code</li>
+<li><code>COUNTY_DESC</code>: name of county</li>
+<li><code>BEDSCODE</code>: beds code for the school</li>
+<li><code>NAME</code>: school name</li>
+<li><code>ITEM_SUBJECT_AREA</code>: subject for tests; one of [&quot;ELA&quot;, &quot;Math&quot;]</li>
+<li><code>ITEM_DESC</code>: Grades tested for ITEM_SUBJECT_AREA</li>
+<li><code>SUBGROUP_CODE</code>: demographic code</li>
+<li><code>SUBGROUP_NAME</code>: demographic</li>
+<li><code>TOTAL_TESTED</code>: # of students tested</li>
+<li><code>LX_COUNT</code>: # of lvl X scores where X is 1-4</li>
+<li><code>LX_PCT</code>: % of lvl X scores where X is 1-4</li>
+<li><code>L2-L4 PCT</code>: % of lvl 2-4 scores</li>
+<li><code>L3-L4 PCT</code>: % of lvl 3-4 scores</li>
+<li><code>MEAN_SCALE_SCORE</code>: mean scale score</li>
+</ul>
+</li>
+</ul>
+</li>
+</ul></details>
+</div>
+    <div class="flexer dataset">
+<details><summary>
+      <a href="https://data.nysed.gov/downloads.php">2021 ELA Scores</a>
+</summary>
+      <ul>
+<li><ul>
+<li><strong>Description</strong>: ELA and Math scores for all NY schools (listed by school name) in 2021. Doesn&#39;t include &quot;All Grades&quot; category like previous years.</li>
+<li><strong>Columns</strong>:<ul>
+<li><code>SY_END_DATE</code>: school year end date</li>
+<li><code>BEDSCODE</code>: beds code for the school</li>
+<li><code>NAME</code>: school name</li>
+<li><code>ITEM_SUBJECT_AREA</code>: subject for tests; one of [&quot;ELA&quot;, &quot;Math&quot;]</li>
+<li><code>ITEM_DESC</code>: Grades tested for ITEM_SUBJECT_AREA</li>
+<li><code>SUBGROUP_CODE</code>: demographic code</li>
+<li><code>SUBGROUP_NAME</code>: demographic</li>
+<li><code>TOTAL_ENROLLED</code>: # of students enrolled</li>
+<li><code>TOTAL_TESTED</code>: # of students tested</li>
+<li><code>TOTAL_NOT_TESTED</code>: # of students not tested</li>
+<li><code>LX_COUNT</code>: # of lvl X scores where X is 1-4</li>
+<li><code>LX_PCT</code>: % of lvl X scores where X is 1-4</li>
+<li><code>L3-L4 PCT</code>: % of lvl 3-4 scores</li>
+<li><code>MEAN_SCALE_SCORE</code>: mean scale score</li>
+</ul>
+</li>
+</ul>
+</li>
+</ul></details>
+</div>
+    <div class="flexer dataset">
+      <details>
+        <summary>
+      <a href="https://data.nysed.gov/downloads.php">2021 ELA Scores</a></summary>
+      <ul>
+<li><ul>
+<li><strong>Description</strong>: ELA and Math scores for all NY schools (listed by school name) in 2021. Doesn&#39;t include &quot;All Grades&quot; category like previous years.</li>
+<li><strong>Columns</strong>:<ul>
+<li><code>SY_END_DATE</code>: school year end date</li>
+<li><code>BEDSCODE</code>: beds code for the school</li>
+<li><code>NAME</code>: school name</li>
+<li><code>ITEM_SUBJECT_AREA</code>: subject for tests; one of [&quot;ELA&quot;, &quot;Math&quot;]</li>
+<li><code>ITEM_DESC</code>: Grades tested for ITEM_SUBJECT_AREA</li>
+<li><code>SUBGROUP_CODE</code>: demographic code</li>
+<li><code>SUBGROUP_NAME</code>: demographic</li>
+<li><code>TOTAL_ENROLLED</code>: # of students enrolled</li>
+<li><code>TOTAL_TESTED</code>: # of students tested</li>
+<li><code>TOTAL_NOT_TESTED</code>: # of students not tested</li>
+<li><code>LX_COUNT</code>: # of lvl X scores where X is 1-4</li>
+<li><code>LX_PCT</code>: % of lvl X scores where X is 1-4</li>
+<li><code>L3-L4 PCT</code>: % of lvl 3-4 scores</li>
+<li><code>MEAN_SCALE_SCORE</code>: mean scale score</li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+</details>
+</div>
+    <div class="flexer dataset">
+      <details>
+        <summary><a href="https://data.cityofnewyork.us/City-Government/NYC-Independent-Budget-Office-IBO-State-And-Federa/fu34-wamz">1980-2020 NYC Budget</a></summary>
+
+      <ul>
+<li><ul>
+<li><strong>Description</strong>: NY categorical budget from 1980-2020.</li>
+<li><strong>Columns</strong>:<ul>
+<li><code>State and Federal Categorical Aid</code>: the category where the budget is allocated</li>
+<li><code>source_of_categorical_aid</code>: &quot;State&quot; or &quot;Federal&quot;</li>
+<li><code>FY XXXX</code>: Fiscal Year where XXXX represents one of 1980-2020</li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+      </details>
+</div>
+    <div class="flexer dataset">
+<details><summary>
+  <a href="https://www.bls.gov/data/">1980-2021 NY Consumer Price Index</a>
+</summary>
+      <ul>
+<li><ul>
+<li><strong>Description</strong>: Consumer Price Index (used for inflation) from 1980-2020 chained to 1980.</li>
+<li><strong>Columns</strong>:<ul>
+<li><code>Year</code>: the year (2006-2021)</li>
+<li><code>Jan-Dec</code>: a column for the CPI for each month</li>
+<li><code>Annual</code>: annual CPI</li>
+<li><code>HALF1</code>: CPI for months 1-6</li>
+<li><code>HALF2</code>: CPI for months 7-12</li>
+</ul>
+</li>
+</ul>
+</li>
+</ul></details>
+</div>
+  </div>
+</details>
+
+
+
+
+   
+<details>
+  <summary><h3><span style="font-family: monospace;">matplotlib</span> figures</h3></summary>
+
+  <div class="flexer">
+    <details>
+      <summary>ELA Proficiency, Children of Color</summary>
+      <img src="/assets/Children-Proficiency.gif" />
+    </details>
+  </div>
+
+    <div class="flexer">
+    <details>
+      <summary>Percentage of Schools with 0 Proficient Students in a Grade</summary>
+      <img src="/assets/Common-Core-Bar.png" />
+    </details>
+  </div>
+
+    <div class="flexer">
+    <details>
+      <summary>NY Education Budget vs. ELA Proficiency under ESSA</summary>
+      <img src="/assets/ESSA-Budget.png" />
+    </details>
+  </div>
+
+    <div class="flexer">
+    <details>
+      <summary>NY Education Budget vs. ELA Proficiency under NCLB</summary>
+      <img src="/assets/NCLB-Budget.png" />
+    </details>
+  </div>
+
+    <div class="flexer">
+    <details>
+      <summary># of Merged or Closed NYC Schools, 2006-2012</summary>
+      <img src="/assets/NYC-Close-Bar.png" />
+    </details>
+  </div>
+
+    <div class="flexer">
+    <details>
+      <summary>NYC Schools with &lt; 20% Proficiency</summary>
+      <img src="/assets/NYC-Prof-Bar.png" />
+    </details>
+  </div>
+
+    <div class="flexer">
+    <details>
+      <summary>NYC Schools with &gt; 65% Proficiency</summary>
+      <img src="/assets/NYC-Proficiency.gif" />
+    </details>
+  </div>
+
+    <div class="flexer">
+    <details>
+      <summary>Overall ELA Proficiency</summary>
+      <img src="/assets/Overall-Proficiency.gif" />
+    </details>
+  </div>
+
+    <div class="flexer">
+    <details>
+      <summary>ELA Proficiency, Students with Disabilities</summary>
+      <img src="/assets/SWD-Proficiency.gif" />
+    </details>
+  </div>
+</details>
+
+
+
+
+
+<details>
+  <summary><h3><span style="font-family: monospace;">chart.js</span> figures</h3></summary>
+
+
+  <details>
+    <summary>NYS Education Budget 2006-2020, adjusted for inflation</summary>
+    <canvas id="budget"></canvas>
+  </details>
+  <details>
+    <summary>Percent of Schools Below 20% Proficiency</summary>
+    <canvas id="twentyprof"></canvas>
+  </details>
+
+
+
+
+</details>
+
+
+
+
+
+<details>
+  <summary><h3>Python Code</h3></summary>
+  <p><a href="https://github.com/andymina/csci778-final-project">Link to Github</a></p>
+</details>
+
+
+    </div>   <!-- end container div -->  
     <script 
     src="https://cdnjs.cloudflare.com/ajax/libs/PapaParse/5.4.1/papaparse.min.js" 
     integrity="sha512-dfX5uYVXzyU8+KHqj8bjo7UkOdg18PaOtpa48djpNbZHwExddghZ+ZmzWT06R5v6NSk3ZUfsH6FNEDepLx9hPQ==" 
     crossorigin="anonymous" 
     referrerpolicy="no-referrer"></script>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-    <script src="script.js"></script>
+    <script>
+
+const budgetctx = document.querySelector("#budget");
+const twentyprofctx = document.querySelector("#twentyprof");
+
+
+/* 
+Begin Chart.js stuff
+*/
+
+
+let budget_years = []
+let budget_amounts = []
+
+const budget_data = {
+  labels: budget_years,
+  datasets: [
+    {
+      label: "Billions spent",
+      data: budget_amounts,
+      borderColor: "rgb(255, 99, 132)",
+      backgroundColor: "rgba(255, 99, 132, 0.5)",
+      pointStyle: "circle",
+      pointRadius: 10,
+      pointHoverRadius: 15,
+    },
+  ],
+};
+
+
+
+const budget_config = {
+  type: "line",
+  data: budget_data,
+  options: {
+    responsive: true,
+    maintainAspectRatio: false,
+    scales: {
+        y: {
+          beginAtZero: true
+        }
+      },
+    plugins: {
+      title: {
+        display: true,
+        text: "Budget",
+      },
+    },
+  },
+};
+
+
+let budgetChart = new Chart(budgetctx, budget_config);
+
+
+
+
+const twentyprof_data = {
+  labels: [2006, 2007, 2008, 2009, 2010, 2011, 2012, 2013, 2014, 2015, 2016, 2017, 2018, 2019, 2020, 2021],
+  datasets: [
+    {
+      label: "% of schools below 20% proficiency",
+      data: [68, 58, 34, 24, 163, 152, 115, 508, 492, 468, 258, 191, 79, 71, 27],
+      borderColor: "rgb(255, 99, 132)",
+      backgroundColor: "rgba(255, 99, 132, 0.5)",
+      pointStyle: "circle",
+      pointRadius: 10,
+      pointHoverRadius: 15,
+    },
+  ],
+};
+
+
+
+const twentyprof_config = {
+  type: "line",
+  data: twentyprof_data,
+  options: {
+    responsive: true,
+    maintainAspectRatio: false,
+    scales: {
+        y: {
+          beginAtZero: true
+        }
+      },
+    plugins: {
+      title: {
+        display: true,
+        text: "NYC Schools with < 20% proficiency",
+      },
+    },
+  },
+};
+
+
+let twentyprofchart = new Chart(twentyprofctx, twentyprof_config);
+
+
+
+
+
+/* 
+
+Begin parsing of csv file
+
+*/
+
+const budget_raw = `Year,Combined,Inflation,Scaled 1e9
+2006,8395603930,10762502328.38967,10.76
+2007,8889497116,11082297188.942982,11.08
+2008,9749642465,11698810113.570164,11.7
+2009,10355681570,12371284407.408005,12.37
+2010,10989317635,12908104761.584131,12.91
+2011,10871695465,12416619224.108868,12.42
+2012,9872147831,11057643531.5475,11.06
+2013,9806070807,10802091447.424746,10.8
+2014,9579648298,10414917943.627407,10.41
+2015,10808355982,11735966941.822704,11.74
+2016,11310541312,12150355392.671919,12.15
+2017,11958640003,12599949462.419039,12.6
+2018,12495438923,12919151662.562117,12.92
+2019,13060914785,13284228048.82084,13.28
+2020,13165935267,13165935267.0,13.17`
+
+Papa.parse(budget_raw, {
+	//download: true,
+  header: true,
+  worker: true,
+	step: function(row) {
+		console.log("Row:", row.data);
+    budget_years.push(parseFloat(row.data['Year']));
+    budget_amounts.push(parseFloat(row.data['Scaled 1e9']));
+	},
+	complete: function() {
+		console.log(budget_years);
+		console.log(budget_amounts);
+    budgetChart.update()
+	}
+});
+
+    </script>
   </body>
 </html>

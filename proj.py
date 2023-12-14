@@ -901,3 +901,40 @@ cc_bar_ax.set(
     ylim=[0, 10]
 )
 cc_bar_fig.savefig("assets/Common-Core-Bar.png")
+
+# NYC schools with < 20% prof
+years = gen_ela["Year"].unique()
+nyc_bars = [
+    len(gen_ela[(gen_ela["Level 3+4 %"] < 20) & (gen_ela["Year"] == year)])
+    for year in years
+]
+
+# create graph
+nyc_prof_fig, nyc_prof_ax = plt.subplots()
+nyc_prof_ax.bar(years, nyc_bars, width=0.5)
+
+# label graph
+nyc_prof_ax.set(
+    title="NYC Schools with < 20% Proficiency",
+    xlabel="Year",
+    ylabel="# of Schools"
+)
+nyc_prof_fig.savefig("assets/NYC-Prof-Bar.png")
+
+years = [y for y in range(2006, 2013)]
+schools_closed = [
+    len(ela[(ela["School Name"] == "CLOSED OR MERGED") & (ela["Year"] == year)])
+    for year in years
+]
+
+# create graph
+school_fig, school_ax = plt.subplots()
+school_ax.bar(years, schools_closed, width=0.5)
+
+# label graph
+school_ax.set(
+    title="# of NYC Schools that Have Since Been Closed/Merged from 2006-2012",
+    xlabel="Year",
+    ylabel="# of Schools"
+)
+school_fig.savefig("assets/NYC-Close-Bar.png")

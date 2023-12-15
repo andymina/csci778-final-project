@@ -43,6 +43,7 @@ details{
   border-radius: 6px;
   line-height: 1.3;
   border: 2px dotted #ffe291;
+  overflow-wrap: break-word;
 }
 
 details:hover{
@@ -61,7 +62,7 @@ details[open]:hover{
 }
 
 #container{
-  max-width: 800px;
+  max-width: 1000px;
   display: block;
   margin: auto;
   text-align: left;
@@ -131,6 +132,10 @@ canvas{
   padding: 1em;
 }
 
+img{
+  width: 100%;
+}
+
     </style>
   </head>
   <body>
@@ -143,9 +148,8 @@ canvas{
        Andy Mina and Luis Collado
       </h4>
     </div> <!-- end description div -->
-<p>We wanted to analyze the impact that Pres. Bush&#39;s No Child Left Behind (NCLB) and Pres. Obama&#39;s Every Student Succeeds Act (ESSA) had on NYC ELA exam performance. NCLB and ESSA treated schools wildly differently and each had a unique belief about how the budget should be allocated resulting in major performance differences. Zooming into NYC from the nationwide view, I hypothesized that overall NYC ELA proficiency would be better under ESSA given the historical background of both policies.</p>
-<p>I used data science to show the overall trend of ELA scores across the 5 boroughs as well as notable anomalies through visualizations. I&#39;ve also created a Linear Regession of the city&#39;s general performance with the allocated budget for that year in an attempt to predict the future trend of ELA scores.</p>
-<p>NYC is the nation&#39;s largest public school system so understanding how federal policy impacts the ELA scores of NYC can provide insight to how federal policy will influence ELA scores on a large scale. It&#39;s also important to learn the mistakes of past federal policies so we can better invest into the growing future of NYC&#39;s public education.</p>
+<p>We wanted to analyze the impact that Pres. Bush&#39;s No Child Left Behind (NCLB) and Pres. Obama&#39;s Every Student Succeeds Act (ESSA) had on NYC ELA exam performance. NCLB and ESSA treated schools wildly differently and each had a unique belief about how the budget should be allocated resulting in major performance differences.</p>
+<p>NYC is the nation&#39;s largest public school system. Understanding how federal policy impacts the ELA scores of NYC can provide insight to how federal policy will influence ELA scores on a large scale. It&#39;s also important to learn the mistakes of past federal policies so we can better invest into the growing future of NYC&#39;s public education.</p>
 
 <h2>Ethics</h2>
 
@@ -177,7 +181,7 @@ canvas{
     </details>
     <details>
       <summary>
-        <b>Public Data!</b>
+        <b>Public Data</b>
       </summary>
       <p>While the datasets that we used for this project are public, the knowledge required to process the data and present it in the ways that we did is nowhere near as public. It would be a completely reasonable thing for the government to do to provide "Data Explorer" frontends for the data that they provide an API to. While anyone can download the data, that doesn't in itself make the data accessible to everyone.
     </details>
@@ -209,7 +213,58 @@ canvas{
 </details>
 
  
+<details>
+  <summary><h3>Analysis</h3></summary>
 
+  <p>We begin our analysis by inspecting how each borough performed on the ELA by year. Since our project focuses heavily on the chronology of NYC ELAs, we figured an animation was the most fitting medium of conveying the data in certain areas.</p>
+
+  <p><img src="https://raw.githubusercontent.com/andymina/csci778-final-project/main/assets/Overall-Proficiency.gif" /></p>
+
+  <p>Throughout all five boroughs, it's clear to see that 2013 was a particularly poor year for performance. For example, out of all of the students tested in the Bronx, just over 15% were ELA proficient. Other areas of the data will also reflect this massive dip in 2013 because this was the first year NYC used CCSS on the ELA.</p>
+
+<p>
+Before ESSA was introduced, proficiency rates by borough under NCLB were slowly declining. However, after ESSA is introduced proficiency rates rise back to their 2009 peak. When comparing ESSA's borough proficiency rate to NCLB, it's clear that ESSA performed better and has the potential to outshine NCLB.</p>
+
+<p><img src="https://raw.githubusercontent.com/andymina/csci778-final-project/main/assets/Children-Proficiency.gif" /></p>
+
+<p>ESSA also out-performs NCLB with respect to SWD ELA proficiency as the general trend of improvement can be seen post-2015 (2016 was the first ESSA ELA). However, the quantitative SWD proficiency ELA is abysmal and shows that both policies have much room for improvement.</p>
+
+<p><img src="https://raw.githubusercontent.com/andymina/csci778-final-project/main/assets/SWD-Proficiency.gif" /></p>
+
+<p>Zooming out from the borough-wide view towards a city-wide view, we were interested in how NYC's overall proficiency rate changed across each federal policy. As most schools do, we defined our "passing" grade to be 65%. The following graph shows what percent of NYC schools had a "passing" proficiency rate through the years.</p>
+
+<p><img src="https://raw.githubusercontent.com/andymina/csci778-final-project/main/assets/NYC-Proficiency.gif" /></p>
+
+<p>
+  In 2013, the first year of CCSS ELAs, just over 5% of NYC schools that took the state exam had a school-wide proficiency rate of at least 65%. The following years of the CCSS ELA didn't perform much better either.</p>
+<p>
+The 2013-2015 dip seen in the past four graphs can explained by a few factors:
+<ol>
+<li>From 2013-2015, NYC administered CCSS ELAs designed by NCLB which were notoriously difficult and arguably above grade-level for most students.</li>
+<li>Schools were coerced into adopting a CCSS curriculum too early to secure funding by NCLB. </li>
+<li>The budget catch-22 of NCLB prevented schools that were struggling before 2013 from obtaining an adequate budget leaving them further stranded once a CCSS ELA was administered.</li></ol>
+<p>
+After seeing that just over 5% of NYC schools had a passing proficiency, we was determined to "zoom into" the data and look at specific grades. Public education is the majority of any child's life. Children develop their personalities and general world outlook in public school so it's important to keep them mentally stimulated and encourage them to adopt a positive growth mindset in their early years. This led us to inspect the ELA data for Grades 3-5 during the Common Core Era.
+</p>
+<p><img src="https://raw.githubusercontent.com/andymina/csci778-final-project/main/assets/Common-Core-Bar.png" /></p>
+
+<p>These numbers absolutely shocked us. In 2013, there were 9 schools that didn't have single 5th grader pass the ELA. Although CCSS were originally introduced to improve public school standards, its clear that it did nothing but cause more damage. We were also curious about the number of schools that had a less than stellar proficiency rate.</p>
+<p>
+<img src="https://raw.githubusercontent.com/andymina/csci778-final-project/main/assets/NYC-Prof-Bar.png" /></p>
+<p>
+  NCLB caused more harm to the public education system than it expected to and ESSA acted as a band-aid to remedy the pain points. Although ESSA has done a great job at fixing NCLB's mistakes, it hasn't substantially improved the public education infrastructure. We believe that ESSA will continue to slowly improve public education measured through ELA scores in due time. This hypothesis led us to conduct a regression analysis between NCLB and ESSA vs. their budgets.
+</p>
+
+<p>
+  <img src="https://raw.githubusercontent.com/andymina/csci778-final-project/main/assets/ESSA-Budget.png" />
+</p><p>
+  <img src="https://raw.githubusercontent.com/andymina/csci778-final-project/main/assets/NCLB-Budget.png" />
+</p>
+
+<p>
+  It should be noted that ESSA had less time to develop, so there are about half as many data points. However, with the given data we can see that there is strong correlation between the total budget allocated to public education in NYC and the percent of proficienct students.
+</p>
+</details>
 
 
 
@@ -468,7 +523,9 @@ canvas{
     <details>
       <summary>ELA Proficiency, Children of Color</summary>
       <img src="https://raw.githubusercontent.com/andymina/csci778-final-project/main/assets/Children-Proficiency.gif" />
-    </details>
+        
+</details>
+
   </div>
 
     <div class="flexer">
@@ -557,6 +614,50 @@ canvas{
 <details>
   <summary><h3>Python Code</h3></summary>
   <p><a href="https://github.com/andymina/csci778-final-project">Link to Github</a></p>
+</details>
+
+<details>
+  <summary><h3>Citations</h3></summary>
+<p>
+<a href="https://data.cityofnewyork.us/Education/2006-2012-English-Language-Arts-ELA-Test-Results-S/wrhz-w8mn">
+ https://data.cityofnewyork.us/Education/2006-2012-English-Language-Arts-ELA-Test-Results-S/wrhz-w8mn</a>
+</p>
+<p>
+<a href="https://data.cityofnewyork.us/Education/2006-2012-English-Language-Arts-ELA-Test-Results-S/tn5h-i3e8">
+ https://data.cityofnewyork.us/Education/2006-2012-English-Language-Arts-ELA-Test-Results-S/tn5h-i3e8</a></p>
+<p>
+<a href="https://data.cityofnewyork.us/Education/2006-2012-English-Language-Arts-ELA-Test-Results-S/phth-xf25">
+ https://data.cityofnewyork.us/Education/2006-2012-English-Language-Arts-ELA-Test-Results-S/phth-xf25</a></p>
+<p>
+<a href="https://data.cityofnewyork.us/Education/2013-2018-School-ELA-REsults/qkpp-pbi8"> 
+ttps://data.cityofnewyork.us/Education/2013-2018-School-ELA-REsults/qkpp-pbi8</a></p>
+<p>
+<a href="https://data.nysed.gov/downloads.php
+"> https://data.nysed.gov/downloads.php</a></p>
+
+<p>
+<a href="https://data.cityofnewyork.us/City-Government/NYC-Independent-Budget-Office-IBO-State-And-Federa/fu34-wamz">
+ https://data.cityofnewyork.us/City-Government/NYC-Independent-Budget-Office-IBO-State-And-Federa/fu34-wamz</a></p>
+<p>
+<a href="https://www.bls.gov/data/
+"> https://www.bls.gov/data/</a></p>
+
+<p>
+<a href="https://matplotlib.org/
+"> https://matplotlib.org/</a></p>
+
+<p>
+<a href="https://pandas.pydata.org/docs/
+"> https://pandas.pydata.org/docs/</a></p>
+
+<p>
+<a href="http://www.nysed.gov/news/2015/regents-adjust-common-core-implementation">
+http://www.nysed.gov/news/2015/regents-adjust-common-core-implementation</a></p>
+<p>
+<a href="https://www.nysedregents.org/ei/ela/2021/2021-released-items-ela-g3.pdf"> https://www.nysedregents.org/
+ei/ela/2021/2021-released-items-ela-g3.pdf</a></p>
+<p>
+<a href="https://docs.google.com/document/d/17zlf7wGAaOFx5pIZUVyrPQbGRBElN0jp2Q0PqABo29g/edit?usp=sharing"> https://docs.google.com/document/d/17zlf7wGAaOFx5pIZUVyrPQbGRBElN0jp2Q0PqABo29g/edit?usp=sharing</a></p>
 </details>
 
 

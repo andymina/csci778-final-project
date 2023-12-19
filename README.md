@@ -16,3 +16,7 @@
 --> ~~create website~~ --> luiscollado.com/csci778-final-project  
 --> ~~`chart.js` library~~  
 --> ~~get js to read csv~~  
+
+## Andy Mina - changelog
+
+## Luis Collado - changelog

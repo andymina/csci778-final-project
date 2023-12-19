@@ -16,3 +16,38 @@
   - Time spent: ~2.5 hours
 
 ## Luis Collado - changelog
+
+- W9  ~2.5 hrs
+  - learn how to deal with more complicated CSVs in pandas
+  - refresh regex knowledge for renaming index
+  - handle the budget and consumer price index file
+  - get simple, clean columns of state + federal budget
+- W10  ~2 hrs
+  - learned how to work with dataframes - Andy had a bit more experience than me. 
+  - wrote 2 functions that matched andy's function-based focus, fill_school_name and flatten_scores. 
+  - spent a lot of time troubleshooting .contains() on a string versus on a dataframe's .str value
+- W11  ~2 hrs
+  - regex reviewing for name formatting
+  - a lot of time spent on regexr
+  - i was better with dataframes by now
+  - wrote formatName() to take a dataframe and have all schools be uppercase, no punctuation
+  - createAllGrades() which adds a new column to the dataframe that combines performance in all grades
+- W12  ~2 hrs
+  - read through 2019 ELA csv and document it (!!!!!)
+  - determine which columns need to be included in the code/functions
+  - begin reading ELA csv, review pandas methods
+  - force code to adhere to previous style choices
+- W13  ~2 hrs
+  - same thing as W11 except with 2021 ELAs becase no 2020 ELAs, feature engineer 2021 ELAs (was able to reuse code/ideas)
+  - review set/unique etc. to handle schools closing and/or merging
+  - buy luiscollado.com and look into how to upload code through sftp from codespaces
+  - determine how to best represent charts in javascript
+  - get basic website up and running
+  - html, css, js review!
+- W14  ~4.5 hrs
+  - get chartjs proof of concept running with budget code
+  - finally merge 2006-2021 cleaned data columns 
+  - learn how to make animations in matplotlib (!!!!)
+  - write percentage of proficient schools animation
+  - make + save + upload figures
+  - move on to final website with more gifs and figures
